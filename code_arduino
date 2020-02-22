@@ -1,0 +1,107 @@
+#include <AccelStepper.h>
+
+// start with a piece already clamped and the motor at a 5 mm distance from the workpiece
+// Define a stepper motor 1 for arduino 
+// direction Digital 9 (CW), pulses Digital 8 (CLK)
+AccelStepper stepper1(1, 8, 9);
+AccelStepper stepper2(1, 6, 7);
+int clampopenposition = 50;
+int stepnumber = 1;
+
+
+void setup()
+{  
+ 
+  // Change these to suit your stepper if you want
+  //stepper1.setMaxSpeed(600);//1100//THE CLAMPING MOTOR
+  stepper1.setAcceleration(800);
+ // stepper2.setMaxSpeed(600);//1100//THE X AXIS MOTOR
+  stepper2.setAcceleration(1400);
+  //stepper1.setEnablePin(4);
+  //stepper2.setEnablePin(5);
+  pinMode(1, OUTPUT); // pin 1 is the output for the pneumatic relay
+  pinMode(2, INPUT); //pin2 is the input to the clamping switch
+  //pinMode(3, OUTPUT); // pin 3 is the output for the motor relay
+  
+  }
+
+void loop()
+{
+   
+  // push the new piece in 
+
+
+   if ( stepnumber = 1 ){
+  
+      // if ( digitalRead(2) == HIGH ){
+       // activate the relay to retract
+        digitalWrite(1, LOW);    // turn the pneumatic relay off by making the voltage LOW
+        delay(1000);  
+      //activate the relay to clamp
+      digitalWrite(1, HIGH);   // retract the pneumatic cylinder on (HIGH is the voltage level)
+       delay(3000);   //}
+       stepnumber = 2;
+      }
+
+
+
+ // clamp the piece
+
+     if (stepnumber = 2){
+      stepper1.moveTo(350); // clamp the new piece
+      stepper1.setSpeed(500);
+      stepper1.runToPosition(); // THE CLAMPING DISTANCE
+      stepnumber = 3;
+      delay(3000);
+      }
+  
+     // drill the hole 
+
+     if (stepnumber = 3){
+      stepper2.setCurrentPosition(0);
+      stepper2.moveTo(-6500);//11351 old value newvalue 12000
+      stepper2.setSpeed(1100);
+      stepper2.runToPosition();
+      
+      stepper2.moveTo(-9000);//11351 old value newvalue 12000s
+      while( stepper2.distanceToGo() != 0 ){   // put the clamp  motor in the initial position by the relay switch
+            //stepper1.moveTo(-82);
+            
+            //stepper1.runToPosition();
+           //stepper1.setCurrentPosition(0);
+           stepper2.run();
+           delay(7);
+           }
+  
+     
+      delay(2000);
+
+   
+      stepper2.moveTo(0);
+      //stepper2.setMaxSpeed(1100);
+      stepper2.setSpeed(1100);
+      stepper2.runToPosition();
+      stepnumber = 4;
+      stepper2.setCurrentPosition(0);
+     }
+
+
+
+     //  unclamp and move the clamp to the limit switch
+     if (  stepnumber = 4){
+    stepper1.setCurrentPosition(0);
+    stepper1.moveTo(-1800);
+    while( digitalRead(2) == LOW ){   // put the clamp  motor in the initial position by the relay switch
+            //stepper1.moveTo(-82);
+            //stepper1.setSpeed(1400);
+            //stepper1.runToPosition();
+           //stepper1.setCurrentPosition(0);
+           stepper1.run();
+           }
+          stepnumber = 1;
+          }
+    
+     delay(2000);
+      
+     
+}
