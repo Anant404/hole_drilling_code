@@ -1,4 +1,4 @@
-# hole_drilling_code
+# Automated hole drilling machine code
 
 The code is for an automated hole drilling machine that I developed as part of 
 initiative to create technology for rural artisans. The holes were drilled as
